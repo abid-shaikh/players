@@ -43,17 +43,11 @@ app.use("/api", playerRoute);
 app.use((err, req, res, next) => {
   if (err instanceof CustomErrorHandler) {
     return res.status(err.status).json({
-      error: {
-        message: err.message,
-        status: err.status,
-      },
+      message: err.message,
     });
   } else {
     return res.status(500).json({
-      error: {
-        message: err.message,
-        status: err.status,
-      },
+      message: err.message,
     });
   }
 });
