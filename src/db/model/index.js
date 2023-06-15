@@ -5,19 +5,36 @@
 // WILL RESULT IN A TEST FAILURE
 // /////////////////////////////////////////////////////////////////////////////
 
+const dbConfig = require("../../config/db.config.js");
 
-import Player from './player';
-import PlayerSkill from './playerSkill';
+const Sequelize = require("sequelize");
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
 
-const database = {
-  Player,
-  PlayerSkill
-};
-
-Object.keys(database).forEach(function (modelName) {
-  if (database[modelName].associate) {
-    database[modelName].associate(database);
-  }
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle,
+  },
 });
 
-export default database;
+const db = {};
+
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+db.Player = require("./player.js")(sequelize, Sequelize);
+db.PlayerSkill = require("./playerSkill.js")(sequelize, Sequelize);
+
+db.Player.hasMany(db.PlayerSkill, {
+  as: "playerSkills",
+  foreignKey: "playerId",
+});
+db.PlayerSkill.belongsTo(db.Player, {
+  as: "player",
+  foreignKey: "playerId",
+});
+
+module.exports = db;

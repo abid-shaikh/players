@@ -3,28 +3,26 @@
 // YOU SHOULD NOT CHANGE THE EXPORTED VALUE OF THIS FILE
 // ---------------------------------------------------------------------------------------------
 
-import Sequelize from 'sequelize';
-import database from '../index';
-
-const Player = database.define('player', {
+module.exports = (sequelize, Sequelize) => {
+  const Player = sequelize.define("players", {
     id: {
-        type: Sequelize.INTEGER,
-        autoIncrement: true,
-        allowNull: false,
-        primaryKey: true
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      allowNull: false,
+      primaryKey: true,
     },
     name: {
-        type: Sequelize.STRING(200),
+      type: Sequelize.STRING(100),
+      allowNull: false,
     },
     position: {
-        type: Sequelize.STRING(200),
-    }
-}, {
-    timestamps: false
-})
+      type: Sequelize.STRING(20),
+      allowNull: false,
+      validate: {
+        isIn: [["defender", "midfielder", "forward"]],
+      },
+    },
+  });
 
-Player.associate = (models) => {
-    models.Player.hasMany(models.PlayerSkill);
-}
-
-export default Player;
+  return Player;
+};
